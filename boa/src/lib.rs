@@ -1,3 +1,5 @@
+//! This is an experimental Javascript lexer, parser and compiler written in Rust. Currently, it has support for some of the language.
+
 #![deny(
     unused_qualifications,
     clippy::all,
