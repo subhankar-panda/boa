@@ -1,3 +1,5 @@
+//! This module implements Nodes in inside the AST, and Node Kinds
+
 use crate::syntax::ast::{
     constant::Const,
     op::{BinOp, Operator, UnaryOp},
@@ -341,6 +343,7 @@ pub struct FormalParameter {
     pub is_rest_param: bool,
 }
 
+/// <https://tc39.es/ecma262/#prod-FormalParameters>
 pub type FormalParameters = Vec<FormalParameter>;
 
 impl FormalParameter {
@@ -353,7 +356,8 @@ impl FormalParameter {
     }
 }
 
-// TODO: Support all features: https://tc39.es/ecma262/#prod-PropertyDefinition
+/// Describes the property kind on objects.\
+/// <https://tc39.es/ecma262/#prod-PropertyDefinition>
 #[cfg_attr(feature = "serde-ast", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, PartialEq, Trace, Finalize)]
 pub enum PropertyDefinition {
@@ -362,7 +366,8 @@ pub enum PropertyDefinition {
     MethodDefinition(MethodDefinitionKind, String, Node),
     SpreadObject(Node),
 }
-
+/// Describes the defition kind on object methods.\
+/// <https://tc39.es/ecma262/#prod-MethodDefinition>
 #[cfg_attr(feature = "serde-ast", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, PartialEq, Trace, Finalize)]
 pub enum MethodDefinitionKind {
