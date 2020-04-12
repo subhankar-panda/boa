@@ -1,3 +1,4 @@
+//! This module implements all of the primitive/constant values we use, such as `number`, `string`, `null`
 use gc_derive::{Finalize, Trace};
 use std::fmt::{Display, Formatter, Result};
 
