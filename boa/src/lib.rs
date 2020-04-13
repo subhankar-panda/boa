@@ -82,8 +82,7 @@ pub fn forward(engine: &mut Interpreter, src: &str) -> String {
 pub fn forward_val(engine: &mut Interpreter, src: &str) -> ResultValue {
     // Setup executor
     let profiler = MyProfiler::new();
-    profiler.start_event("Parser");
-    let res = parser_expr(src).unwrap();
+    let _timer = profiler.start_event("Main");
 
     match parser_expr(src) {
         Ok(expr) => engine.run(&expr),

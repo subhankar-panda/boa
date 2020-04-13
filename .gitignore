@@ -15,5 +15,11 @@ node_modules
 yarn-error.log
 .vscode/settings.json
 
+# Profiling
+*.string_data
+*.string_index
+*.events
+chrome_profiler.json
+
 # tests/js/test.js is used for testing changes locally
 tests/js/test.js
