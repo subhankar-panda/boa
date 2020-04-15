@@ -569,6 +569,10 @@ impl Executor for Interpreter {
                 // TODO: for now we can do nothing but return the value as-is
                 Ok(Gc::new((*self.run(node)?).clone()))
             }
+            Node::This => {
+                // Will either return `this` binding or undefined
+                Ok(self.realm.environment.get_this_binding())
+            }
             ref i => unimplemented!("{}", i),
         }
     }

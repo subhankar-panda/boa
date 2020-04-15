@@ -75,21 +75,6 @@ impl FunctionEnvironmentRecord {
             }
         }
     }
-
-    pub fn get_this_binding(&self) -> Value {
-        match self.this_binding_status {
-            BindingStatus::Lexical => {
-                // TODO: change this when error handling comes into play
-                panic!("There is no this for a lexical function record");
-            }
-            BindingStatus::Uninitialized => {
-                // TODO: change this when error handling comes into play
-                panic!("Reference Error: Unitialised binding for this function");
-            }
-
-            BindingStatus::Initialized => self.this_value.clone(),
-        }
-    }
 }
 
 impl EnvironmentRecordTrait for FunctionEnvironmentRecord {
@@ -114,6 +99,21 @@ impl EnvironmentRecordTrait for FunctionEnvironmentRecord {
                 strict: false,
             },
         );
+    }
+
+    fn get_this_binding(&self) -> Value {
+        match self.this_binding_status {
+            BindingStatus::Lexical => {
+                // TODO: change this when error handling comes into play
+                panic!("There is no this for a lexical function record");
+            }
+            BindingStatus::Uninitialized => {
+                // TODO: change this when error handling comes into play
+                panic!("Reference Error: Unitialised binding for this function");
+            }
+
+            BindingStatus::Initialized => self.this_value.clone(),
+        }
     }
 
     fn create_immutable_binding(&mut self, name: String, strict: bool) -> bool {
