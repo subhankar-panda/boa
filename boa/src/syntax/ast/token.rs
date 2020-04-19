@@ -56,6 +56,30 @@ impl Debug for VecToken {
     }
 }
 
+/// Represents the type differenct types of numeric literals.
+#[cfg_attr(feature = "serde-ast", derive(Serialize, Deserialize))]
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum NumericLiteral {
+    /// A floating point number
+    Rational(f64),
+
+    /// An integer
+    Integer(i32),
+    // TODO: Add BigInt
+}
+
+impl From<f64> for NumericLiteral {
+    fn from(n: f64) -> Self {
+        Self::Rational(n)
+    }
+}
+
+impl From<i32> for NumericLiteral {
+    fn from(n: i32) -> Self {
+        Self::Integer(n)
+    }
+}
+
 /// Represents the type of Token and the data it has inside.
 #[cfg_attr(feature = "serde-ast", derive(Serialize, Deserialize))]
 #[derive(Clone, PartialEq, Debug)]
@@ -78,7 +102,7 @@ pub enum TokenKind {
     NullLiteral,
 
     /// A numeric literal.
-    NumericLiteral(f64),
+    NumericLiteral(NumericLiteral),
 
     /// A piece of punctuation
     ///
@@ -95,6 +119,16 @@ pub enum TokenKind {
     LineTerminator,
 }
 
+impl TokenKind {
+    /// Creates a `NumericLiteral` token type.
+    pub fn numeric_literal<L>(lit: L) -> Self
+    where
+        L: Into<NumericLiteral>,
+    {
+        Self::NumericLiteral(lit.into())
+    }
+}
+
 impl Display for TokenKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match *self {
@@ -103,7 +137,8 @@ impl Display for TokenKind {
             TokenKind::Identifier(ref ident) => write!(f, "{}", ident),
             TokenKind::Keyword(ref word) => write!(f, "{}", word),
             TokenKind::NullLiteral => write!(f, "null"),
-            TokenKind::NumericLiteral(ref num) => write!(f, "{}", num),
+            TokenKind::NumericLiteral(NumericLiteral::Rational(num)) => write!(f, "{}", num),
+            TokenKind::NumericLiteral(NumericLiteral::Integer(num)) => write!(f, "{}", num),
             TokenKind::Punctuator(ref punc) => write!(f, "{}", punc),
             TokenKind::StringLiteral(ref lit) => write!(f, "{}", lit),
             TokenKind::RegularExpressionLiteral(ref body, ref flags) => {

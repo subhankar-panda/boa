@@ -186,9 +186,9 @@ fn check_array() {
     check_parser(
         "[1, 2, 3]",
         &[Node::ArrayDecl(vec![
-            Node::Const(Const::Num(1.0)),
-            Node::Const(Const::Num(2.0)),
-            Node::Const(Const::Num(3.0)),
+            Node::Const(Const::Int(1)),
+            Node::Const(Const::Int(2)),
+            Node::Const(Const::Int(3)),
         ])],
     );
 
@@ -196,9 +196,9 @@ fn check_array() {
     check_parser(
         "[1, 2, 3,]",
         &[Node::ArrayDecl(vec![
-            Node::Const(Const::Num(1.0)),
-            Node::Const(Const::Num(2.0)),
-            Node::Const(Const::Num(3.0)),
+            Node::Const(Const::Int(1)),
+            Node::Const(Const::Int(2)),
+            Node::Const(Const::Int(3)),
         ])],
     );
 
@@ -206,10 +206,10 @@ fn check_array() {
     check_parser(
         "[1, 2, , 3]",
         &[Node::ArrayDecl(vec![
-            Node::Const(Const::Num(1.0)),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(1)),
+            Node::Const(Const::Int(2)),
             Node::Const(Const::Undefined),
-            Node::Const(Const::Num(3.0)),
+            Node::Const(Const::Int(3)),
         ])],
     );
 
@@ -217,11 +217,11 @@ fn check_array() {
     check_parser(
         "[1, 2, ,, 3]",
         &[Node::ArrayDecl(vec![
-            Node::Const(Const::Num(1.0)),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(1)),
+            Node::Const(Const::Int(2)),
             Node::Const(Const::Undefined),
             Node::Const(Const::Undefined),
-            Node::Const(Const::Num(3.0)),
+            Node::Const(Const::Int(3)),
         ])],
     );
 
@@ -229,9 +229,9 @@ fn check_array() {
     check_parser(
         "[1, \"a\", 2]",
         &[Node::ArrayDecl(vec![
-            Node::Const(Const::Num(1.0)),
+            Node::Const(Const::Int(1)),
             Node::Const(Const::String(String::from("a"))),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(2)),
         ])],
     );
 
@@ -239,9 +239,9 @@ fn check_array() {
     check_parser(
         "[1, \"\", 2]",
         &[Node::ArrayDecl(vec![
-            Node::Const(Const::Num(1.0)),
+            Node::Const(Const::Int(1)),
             Node::Const(Const::String(String::new())),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(2)),
         ])],
     );
 }
@@ -255,7 +255,7 @@ fn check_declarations() {
         "var a = 5;",
         &[Node::VarDecl(vec![(
             String::from("a"),
-            Some(Node::Const(Const::Num(5.0))),
+            Some(Node::Const(Const::Int(5))),
         )])],
     );
 
@@ -264,7 +264,7 @@ fn check_declarations() {
         "var a=5;",
         &[Node::VarDecl(vec![(
             String::from("a"),
-            Some(Node::Const(Const::Num(5.0))),
+            Some(Node::Const(Const::Int(5))),
         )])],
     );
 
@@ -275,9 +275,9 @@ fn check_declarations() {
     check_parser(
         "var a = 5, b, c = 6;",
         &[Node::VarDecl(vec![
-            (String::from("a"), Some(Node::Const(Const::Num(5.0)))),
+            (String::from("a"), Some(Node::Const(Const::Int(5)))),
             (String::from("b"), None),
-            (String::from("c"), Some(Node::Const(Const::Num(6.0)))),
+            (String::from("c"), Some(Node::Const(Const::Int(6)))),
         ])],
     );
 
@@ -286,7 +286,7 @@ fn check_declarations() {
         "let a = 5;",
         &[Node::LetDecl(vec![(
             String::from("a"),
-            Some(Node::Const(Const::Num(5.0))),
+            Some(Node::Const(Const::Int(5))),
         )])],
     );
 
@@ -295,7 +295,7 @@ fn check_declarations() {
         "let a=5;",
         &[Node::LetDecl(vec![(
             String::from("a"),
-            Some(Node::Const(Const::Num(5.0))),
+            Some(Node::Const(Const::Int(5))),
         )])],
     );
 
@@ -306,9 +306,9 @@ fn check_declarations() {
     check_parser(
         "let a = 5, b, c = 6;",
         &[Node::LetDecl(vec![
-            (String::from("a"), Some(Node::Const(Const::Num(5.0)))),
+            (String::from("a"), Some(Node::Const(Const::Int(5)))),
             (String::from("b"), None),
-            (String::from("c"), Some(Node::Const(Const::Num(6.0)))),
+            (String::from("c"), Some(Node::Const(Const::Int(6)))),
         ])],
     );
 
@@ -317,7 +317,7 @@ fn check_declarations() {
         "const a = 5;",
         &[Node::ConstDecl(vec![(
             String::from("a"),
-            Node::Const(Const::Num(5.0)),
+            Node::Const(Const::Int(5)),
         )])],
     );
 
@@ -326,7 +326,7 @@ fn check_declarations() {
         "const a=5;",
         &[Node::ConstDecl(vec![(
             String::from("a"),
-            Node::Const(Const::Num(5.0)),
+            Node::Const(Const::Int(5)),
         )])],
     );
 
@@ -337,8 +337,8 @@ fn check_declarations() {
     check_parser(
         "const a = 5, c = 6;",
         &[Node::ConstDecl(vec![
-            (String::from("a"), Node::Const(Const::Num(5.0))),
-            (String::from("c"), Node::Const(Const::Num(6.0))),
+            (String::from("a"), Node::Const(Const::Int(5))),
+            (String::from("c"), Node::Const(Const::Int(6))),
         ])],
     );
 }
@@ -365,7 +365,7 @@ fn check_operations() {
         &[create_bin_op(
             BinOp::Num(NumOp::Add),
             Node::Local(String::from("a")),
-            Node::Const(Const::Num(1.0)),
+            Node::Const(Const::Int(1)),
         )],
     );
     check_parser(
@@ -381,7 +381,7 @@ fn check_operations() {
         &[create_bin_op(
             BinOp::Num(NumOp::Sub),
             Node::Local(String::from("a")),
-            Node::Const(Const::Num(1.0)),
+            Node::Const(Const::Int(1)),
         )],
     );
     check_parser(
@@ -397,7 +397,7 @@ fn check_operations() {
         &[create_bin_op(
             BinOp::Num(NumOp::Div),
             Node::Local(String::from("a")),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(2)),
         )],
     );
     check_parser(
@@ -413,7 +413,7 @@ fn check_operations() {
         &[create_bin_op(
             BinOp::Num(NumOp::Mul),
             Node::Local(String::from("a")),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(2)),
         )],
     );
     check_parser(
@@ -429,7 +429,7 @@ fn check_operations() {
         &[create_bin_op(
             BinOp::Num(NumOp::Exp),
             Node::Local(String::from("a")),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(2)),
         )],
     );
     check_parser(
@@ -445,7 +445,7 @@ fn check_operations() {
         &[create_bin_op(
             BinOp::Num(NumOp::Mod),
             Node::Local(String::from("a")),
-            Node::Const(Const::Num(2.0)),
+            Node::Const(Const::Int(2)),
         )],
     );
 
@@ -463,11 +463,11 @@ fn check_operations() {
                     create_bin_op(
                         BinOp::Num(NumOp::Sub),
                         Node::Local(String::from("b")),
-                        Node::Const(Const::Num(3.0)),
+                        Node::Const(Const::Int(3)),
                     ),
                 ),
             ),
-            Node::Const(Const::Num(1.0)),
+            Node::Const(Const::Int(1)),
         )],
     );
 
@@ -653,8 +653,8 @@ fn check_operations() {
             Node::Local(String::from("a")),
             create_bin_op(
                 BinOp::Num(NumOp::Div),
-                Node::Const(Const::Num(10.0)),
-                Node::Const(Const::Num(2.0)),
+                Node::Const(Const::Int(10)),
+                Node::Const(Const::Int(2)),
             ),
         )],
     );
@@ -774,7 +774,7 @@ fn check_do_while() {
             Box::new(Node::Block(vec![create_bin_op(
                 BinOp::Assign(AssignOp::Add),
                 Node::Local(String::from("a")),
-                Node::Const(Const::Num(1.0)),
+                Node::Const(Const::Int(1)),
             )])),
             Box::new(Node::Const(Const::Bool(true))),
         )],
@@ -808,7 +808,7 @@ fn assing_operator_precedence() {
             Box::new(create_bin_op(
                 BinOp::Num(NumOp::Add),
                 Node::Local(String::from("a")),
-                Node::Const(Const::Num(1.0)),
+                Node::Const(Const::Int(1)),
             )),
         )],
     );

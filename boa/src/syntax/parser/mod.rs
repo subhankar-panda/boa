@@ -11,7 +11,7 @@ use crate::syntax::ast::{
     op::{AssignOp, BinOp, NumOp, UnaryOp},
     pos::Position,
     punc::Punctuator,
-    token::{Token, TokenKind},
+    token::{NumericLiteral, Token, TokenKind},
 };
 use cursor::Cursor;
 use std::fmt;
@@ -1516,7 +1516,12 @@ impl<'a> Parser<'a> {
             TokenKind::NullLiteral => Ok(Node::Const(Const::Null)),
             TokenKind::Identifier(ident) => Ok(Node::Local(ident.clone())),
             TokenKind::StringLiteral(s) => Ok(Node::Const(Const::String(s.clone()))),
-            TokenKind::NumericLiteral(num) => Ok(Node::Const(Const::Num(*num))),
+            TokenKind::NumericLiteral(NumericLiteral::Rational(num)) => {
+                Ok(Node::Const(Const::Num(*num)))
+            }
+            TokenKind::NumericLiteral(NumericLiteral::Integer(num)) => {
+                Ok(Node::Const(Const::Int(*num)))
+            }
             TokenKind::RegularExpressionLiteral(body, flags) => {
                 Ok(Node::New(Box::new(Node::Call(
                     Box::new(Node::Local("RegExp".to_string())),
@@ -1640,7 +1645,8 @@ impl<'a> Parser<'a> {
     fn get_object_property_name(&mut self) -> Result<String, ParseError> {
         let to_string = |token: &Token| match &token.kind {
             TokenKind::Identifier(name) => name.clone(),
-            TokenKind::NumericLiteral(n) => format!("{}", n),
+            TokenKind::NumericLiteral(NumericLiteral::Rational(n)) => format!("{}", n),
+            TokenKind::NumericLiteral(NumericLiteral::Integer(n)) => format!("{}", n),
             TokenKind::StringLiteral(s) => s.clone(),
             _ => unimplemented!("{:?}", token.kind),
         };

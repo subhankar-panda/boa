@@ -48,7 +48,7 @@ pub enum ValueData {
     /// `String` - A UTF-8 string, such as `"Hello, world"`
     String(String),
     /// `Number` - A 64-bit floating point number, such as `3.1415`
-    Number(f64),
+    Rational(f64),
     /// `Number` - A 32-bit integer, such as `42`
     Integer(i32),
     /// `Object` - An object, such as `Math`, represented by a binary tree of string keys to Javascript values
@@ -150,7 +150,21 @@ impl ValueData {
     /// Returns true if the value is a 64-bit floating-point number
     pub fn is_double(&self) -> bool {
         match *self {
-            ValueData::Number(_) => true,
+            ValueData::Rational(_) => true,
+            _ => false,
+        }
+    }
+
+    /// Returns true if the value is integer.
+    #[allow(clippy::float_cmp)]
+    pub fn is_integer(&self) -> bool {
+        // If it can fit in a i32 and the trucated version is
+        // equal to the original then it is an integer.
+        let is_racional_intiger = |n: f64| n == ((n as i32) as f64);
+
+        match *self {
+            ValueData::Integer(_) => true,
+            ValueData::Rational(n) if is_racional_intiger(n) => true,
             _ => false,
         }
     }
@@ -183,7 +197,7 @@ impl ValueData {
         match *self {
             ValueData::Object(_) => true,
             ValueData::String(ref s) if !s.is_empty() => true,
-            ValueData::Number(n) if n != 0.0 && !n.is_nan() => true,
+            ValueData::Rational(n) if n != 0.0 && !n.is_nan() => true,
             ValueData::Integer(n) if n != 0 => true,
             ValueData::Boolean(v) => v,
             _ => false,
@@ -201,7 +215,7 @@ impl ValueData {
                 Ok(num) => num,
                 Err(_) => NAN,
             },
-            ValueData::Number(num) => num,
+            ValueData::Rational(num) => num,
             ValueData::Boolean(true) => 1.0,
             ValueData::Boolean(false) | ValueData::Null => 0.0,
             ValueData::Integer(num) => f64::from(num),
@@ -221,7 +235,7 @@ impl ValueData {
                 Ok(num) => num,
                 Err(_) => 0,
             },
-            ValueData::Number(num) => num as i32,
+            ValueData::Rational(num) => num as i32,
             ValueData::Boolean(true) => 1,
             ValueData::Integer(num) => num,
         }
@@ -559,7 +573,7 @@ impl ValueData {
     pub fn from_json(json: JSONValue) -> Self {
         match json {
             JSONValue::Number(v) => {
-                ValueData::Number(v.as_f64().expect("Could not convert value to f64"))
+                ValueData::Rational(v.as_f64().expect("Could not convert value to f64"))
             }
             JSONValue::String(v) => ValueData::String(v),
             JSONValue::Bool(v) => ValueData::Boolean(v),
@@ -610,7 +624,7 @@ impl ValueData {
                 JSONValue::Object(new_obj)
             }
             ValueData::String(ref str) => JSONValue::String(str.clone()),
-            ValueData::Number(num) => JSONValue::Number(
+            ValueData::Rational(num) => JSONValue::Number(
                 JSONNumber::from_f64(num).expect("Could not convert to JSONNumber"),
             ),
             ValueData::Integer(val) => JSONValue::Number(JSONNumber::from(val)),
@@ -622,7 +636,7 @@ impl ValueData {
     /// https://tc39.es/ecma262/#sec-typeof-operator
     pub fn get_type(&self) -> &'static str {
         match *self {
-            ValueData::Number(_) | ValueData::Integer(_) => "number",
+            ValueData::Rational(_) | ValueData::Integer(_) => "number",
             ValueData::String(_) => "string",
             ValueData::Boolean(_) => "boolean",
             ValueData::Symbol(_) => "symbol",
@@ -640,7 +654,7 @@ impl ValueData {
     }
 
     pub fn as_num_to_power(&self, other: ValueData) -> ValueData {
-        ValueData::Number(self.to_num().powf(other.to_num()))
+        ValueData::Rational(self.to_num().powf(other.to_num()))
     }
 }
 
@@ -850,7 +864,7 @@ impl Display for ValueData {
                 _ => write!(f, "Symbol()"),
             },
             ValueData::String(ref v) => write!(f, "{}", v),
-            ValueData::Number(v) => write!(
+            ValueData::Rational(v) => write!(
                 f,
                 "{}",
                 match v {
@@ -889,13 +903,13 @@ impl PartialEq for ValueData {
                 self.to_string() == other.to_string()
             }
             (ValueData::Boolean(a), ValueData::Boolean(b)) if a == b => true,
-            (ValueData::Number(a), ValueData::Number(b))
+            (ValueData::Rational(a), ValueData::Rational(b))
                 if a == b && !a.is_nan() && !b.is_nan() =>
             {
                 true
             }
-            (ValueData::Number(a), _) if a == other.to_num() => true,
-            (_, ValueData::Number(a)) if a == self.to_num() => true,
+            (ValueData::Rational(a), _) if a == other.to_num() => true,
+            (_, ValueData::Rational(a)) if a == self.to_num() => true,
             (ValueData::Integer(a), ValueData::Integer(b)) if a == b => true,
             _ => false,
         }
@@ -912,32 +926,32 @@ impl Add for ValueData {
             (ref s, ValueData::String(ref o)) => {
                 ValueData::String(format!("{}{}", s.to_string(), o))
             }
-            (ref s, ref o) => ValueData::Number(s.to_num() + o.to_num()),
+            (ref s, ref o) => ValueData::Rational(s.to_num() + o.to_num()),
         }
     }
 }
 impl Sub for ValueData {
     type Output = Self;
     fn sub(self, other: Self) -> Self {
-        ValueData::Number(self.to_num() - other.to_num())
+        ValueData::Rational(self.to_num() - other.to_num())
     }
 }
 impl Mul for ValueData {
     type Output = Self;
     fn mul(self, other: Self) -> Self {
-        ValueData::Number(self.to_num() * other.to_num())
+        ValueData::Rational(self.to_num() * other.to_num())
     }
 }
 impl Div for ValueData {
     type Output = Self;
     fn div(self, other: Self) -> Self {
-        ValueData::Number(self.to_num() / other.to_num())
+        ValueData::Rational(self.to_num() / other.to_num())
     }
 }
 impl Rem for ValueData {
     type Output = Self;
     fn rem(self, other: Self) -> Self {
-        ValueData::Number(self.to_num() % other.to_num())
+        ValueData::Rational(self.to_num() % other.to_num())
     }
 }
 impl BitAnd for ValueData {
@@ -1038,7 +1052,7 @@ impl FromValue for char {
 
 impl ToValue for f64 {
     fn to_value(&self) -> Value {
-        Gc::new(ValueData::Number(*self))
+        Gc::new(ValueData::Rational(*self))
     }
 }
 impl FromValue for f64 {
