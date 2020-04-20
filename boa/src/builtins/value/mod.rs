@@ -110,7 +110,8 @@ impl ValueData {
     pub fn is_function(&self) -> bool {
         match *self {
             ValueData::Function(_) => true,
-            ValueData::Object(ref o) => o.deref().borrow().get_internal_slot("call").is_function(),
+            ValueData::FunctionObj(_) => true,
+            ValueData::Object(ref o) => o.borrow().kind == ObjectKind::Function,
             _ => false,
         }
     }
