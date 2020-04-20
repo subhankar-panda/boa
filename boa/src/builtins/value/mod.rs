@@ -852,7 +852,7 @@ impl Display for ValueData {
             ),
             ValueData::Object(_) => write!(f, "{}", log_string_from(self, true)),
             ValueData::Integer(v) => write!(f, "{}", v),
-            ValueData::FunctionObj(_) => write!(f, "function() {{}}"),
+            ValueData::FunctionObj(_) => write!(f, "function()"),
             ValueData::Function(ref v) => match *v.borrow() {
                 Function::NativeFunc(_) => write!(f, "function() {{ [native code] }}"),
                 Function::RegularFunc(ref rf) => {
